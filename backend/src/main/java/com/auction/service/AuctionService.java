@@ -89,6 +89,10 @@ public class AuctionService {
         // 価格変動ロジック（入札ボタンクリックによる上昇/下降）
         BigDecimal newPrice = calculateNewPrice(product, request.getAmount());
         product.setCurrentPrice(newPrice);
+
+        // 入札時にオークション時間を延長（60分まで10秒ずつカウントアップ）
+        extendAuctionTime(product);
+
         productRepository.save(product);
 
         // 入札を保存
@@ -121,6 +125,47 @@ public class AuctionService {
             return product.getCurrentPrice().add(fluctuation);
         } else {
             return product.getCurrentPrice().subtract(fluctuation);
+        }
+    }
+
+    /**
+     * 入札時にオークション時間を延長する
+     * 60分まで10秒ずつカウントアップする
+     * 
+     * @param product 対象商品
+     */
+    private void extendAuctionTime(Product product) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime currentEndTime = product.getEndTime();
+
+        // 現在の残り時間を計算
+        Duration remainingDuration = Duration.between(now, currentEndTime);
+        long remainingSeconds = remainingDuration.getSeconds();
+
+        System.out.println("🔍 延長処理開始: 商品ID " + product.getId() +
+                ", 現在時刻: " + now +
+                ", 現在の終了時刻: " + currentEndTime +
+                ", 残り時間: " + remainingSeconds + "秒");
+
+        // 現在の残り時間が60分未満の場合のみ延長
+        if (remainingSeconds < 3600) { // 3600秒 = 60分
+            // 10秒追加
+            LocalDateTime newEndTime = currentEndTime.plusSeconds(10);
+
+            // 60分を超えた場合は60分に制限
+            LocalDateTime maxEndTime = now.plusMinutes(60);
+            if (newEndTime.isAfter(maxEndTime)) {
+                newEndTime = maxEndTime;
+                System.out.println("⚠️ 60分制限により終了時間を調整: 商品ID " + product.getId());
+            }
+
+            product.setEndTime(newEndTime);
+
+            System.out.println("⏰ 入札によりオークション時間を延長: 商品ID " + product.getId() +
+                    ", 新しい終了時間: " + newEndTime);
+        } else {
+            System.out.println("❌ 延長条件を満たさない: 商品ID " + product.getId() +
+                    ", 残り時間: " + remainingSeconds + "秒 (60分以上)");
         }
     }
 

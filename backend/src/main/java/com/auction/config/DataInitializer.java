@@ -157,7 +157,7 @@ public class DataInitializer implements CommandLineRunner {
             product.setDescription(descriptions[i]);
             product.setCurrentPrice(new BigDecimal("10000").add(new BigDecimal(i * 5000)));
             product.setMinPrice(new BigDecimal("5000").add(new BigDecimal(i * 2000)));
-            product.setEndTime(now.plusHours(1).plusMinutes(i * 5)); // 1時間後から5分間隔で終了
+            product.setEndTime(now.plusMinutes(30).plusMinutes(i * 2)); // 30分後から2分間隔で終了
             product.setImageUrl(imageUrls[i]);
             product.setStatus(Product.AuctionStatus.ACTIVE);
 

@@ -5,6 +5,25 @@ COLLATE utf8mb4_unicode_ci;
 
 USE auction_db;
 
+-- 会員テーブル
+CREATE TABLE IF NOT EXISTS members (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(20),
+    address TEXT,
+    status ENUM('ACTIVE', 'INACTIVE', 'SUSPENDED') NOT NULL DEFAULT 'ACTIVE',
+    member_type ENUM('REGULAR', 'PREMIUM', 'ADMIN') NOT NULL DEFAULT 'REGULAR',
+    registered_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_username (username),
+    INDEX idx_email (email),
+    INDEX idx_status (status),
+    INDEX idx_member_type (member_type)
+);
+
 -- 商品テーブル
 CREATE TABLE IF NOT EXISTS products (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
