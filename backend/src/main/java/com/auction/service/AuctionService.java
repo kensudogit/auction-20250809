@@ -17,13 +17,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * オークションサービスクラス
+ * オークションのビジネスロジックを提供する
+ * 
+ * @author Auction System
+ * @version 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class AuctionService {
 
+    /** 商品リポジトリ */
     private final ProductRepository productRepository;
+    /** 入札リポジトリ */
     private final BidRepository bidRepository;
 
+    /**
+     * 現在進行中のオークション商品一覧を取得する
+     * 
+     * @return 進行中のオークション商品DTOリスト
+     */
     public List<ProductDto> getActiveAuctions() {
         List<Product> products = productRepository.findActiveAuctions(LocalDateTime.now());
         return products.stream()
@@ -31,14 +45,30 @@ public class AuctionService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 指定されたIDの商品を取得する
+     * 
+     * @param id 商品ID
+     * @return 商品DTO
+     * @throws RuntimeException 商品が見つからない場合
+     */
     public ProductDto getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("商品が見つかりません"));
         return convertToDto(product);
     }
 
+    /**
+     * 入札を実行する
+     * オークション終了チェック、入札額検証、価格更新、入札保存を行う
+     * 
+     * @param request 入札リクエスト
+     * @return 入札DTO
+     * @throws RuntimeException 入札に失敗した場合
+     */
     @Transactional
     public BidDto placeBid(BidRequest request) {
+        // 商品の存在確認
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new RuntimeException("商品が見つかりません"));
 
@@ -71,6 +101,14 @@ public class AuctionService {
         return convertToBidDto(savedBid);
     }
 
+    /**
+     * 商品の新しい価格を計算する
+     * 入札額と現在価格の差に基づいて価格変動をシミュレートする
+     * 
+     * @param product   対象商品
+     * @param bidAmount 入札額
+     * @return 新しい価格
+     */
     private BigDecimal calculateNewPrice(Product product, BigDecimal bidAmount) {
         // 入札ボタンクリックによる価格変動ロジック
         // 現在の価格と入札額の差に基づいて変動
@@ -86,6 +124,13 @@ public class AuctionService {
         }
     }
 
+    /**
+     * 商品エンティティをDTOに変換する
+     * 残り時間、入札数、最高入札者情報も含めて変換する
+     * 
+     * @param product 商品エンティティ
+     * @return 商品DTO
+     */
     private ProductDto convertToDto(Product product) {
         ProductDto dto = new ProductDto();
         dto.setId(product.getId());
@@ -116,6 +161,12 @@ public class AuctionService {
         return dto;
     }
 
+    /**
+     * 入札エンティティをDTOに変換する
+     * 
+     * @param bid 入札エンティティ
+     * @return 入札DTO
+     */
     private BidDto convertToBidDto(Bid bid) {
         BidDto dto = new BidDto();
         dto.setId(bid.getId());
