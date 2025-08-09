@@ -1,0 +1,22 @@
+{
+  "name": "auction-frontend",
+  "version": "1.0.0",
+  "description": "Auction System Frontend",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "nuxt": "^3.8.0",
+    "vue": "^3.3.0",
+    "sockjs-client": "^1.6.1",
+    "webstomp-client": "^1.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,530 @@
+/* リセットCSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* コンテナ */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 8px;
+}
+
+/* ヘッダー */
+.header {
+  text-align: center;
+  margin-bottom: 15px;
+  color: white;
+  padding: 10px 0;
+}
+
+.header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0;
+  text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* オークション開始メッセージ */
+.auction-started-message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 6px 24px rgba(102, 126, 234, 0.3);
+  animation: slideInDown 0.5s ease-out;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* オークショングリッド */
+.auction-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+/* 商品カード */
+.product-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  padding: 8px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  height: fit-content;
+}
+
+.product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.product-card.ended {
+  opacity: 0.7;
+  background: #f8f9fa;
+}
+
+.product-image-container {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: block;
+}
+
+.product-image:hover {
+  transform: scale(1.08);
+}
+
+.image-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(248, 249, 250, 0.8);
+  border-radius: 10px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e3e3e3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.product-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #1a202c;
+  letter-spacing: -0.01em;
+}
+
+.product-description {
+  color: #4a5568;
+  margin-bottom: 6px;
+  font-size: 0.7rem;
+  line-height: 1.1;
+  font-weight: 400;
+}
+
+.product-price {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #e53e3e;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(229, 62, 62, 0.1);
+}
+
+.countdown {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  color: white;
+  padding: 4px 6px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(229, 62, 62, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.countdown.urgent {
+  background: #c0392b;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.bid-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.7rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+/* 入札フォーム */
+.bid-form {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.bid-input {
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.bid-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.bid-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 50px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+}
+
+.bid-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.bid-button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 入札ボタンクリック時のフラッシュ効果 */
+.bid-button.flash {
+  animation: buttonFlash 0.6s ease-out;
+}
+
+@keyframes buttonFlash {
+  0% {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    transform: scale(1);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+  }
+  25% {
+    background: linear-gradient(45deg, #ffffff, #f8f9fa);
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.6);
+  }
+  50% {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+  }
+  75% {
+    background: linear-gradient(45deg, #ffffff, #f8f9fa);
+    transform: scale(1.02);
+    box-shadow: 0 7px 22px rgba(52, 152, 219, 0.55);
+  }
+  100% {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    transform: scale(1);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+  }
+}
+
+/* 入札中のボタンスタイル */
+.bid-button.bidding {
+  background: linear-gradient(45deg, #f39c12, #e67e22);
+  animation: biddingPulse 1.5s infinite;
+}
+
+@keyframes biddingPulse {
+  0% { 
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+    transform: scale(1);
+  }
+  50% { 
+    background: linear-gradient(45deg, #e67e22, #d35400);
+    transform: scale(1.05);
+  }
+  100% { 
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+    transform: scale(1);
+  }
+}
+
+/* ステータスバッジ */
+.status-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  z-index: 10;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.02em;
+}
+
+/* リセットセクション */
+.reset-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.reset-button {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.reset-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+  background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+.reset-button:active {
+  transform: translateY(0);
+}
+
+.reset-button.full-reset {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  margin-left: 10px;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.reset-button.full-reset:hover {
+  background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+/* ページネーション */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+  padding: 20px 0;
+}
+
+.pagination-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.pagination-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.pagination-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.page-button {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: 2px solid #e2e8f0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 40px;
+  text-align: center;
+}
+
+.page-button:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-1px);
+}
+
+.page-button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.page-button:has-content(-1) {
+  background: transparent;
+  border: none;
+  cursor: default;
+  color: #666;
+}
+
+.page-button:has-content(-1):hover {
+  background: transparent;
+  transform: none;
+}
+
+.status-active {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-ended {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .auction-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .container {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auction-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .bid-form {
+    flex-direction: column;
+  }
+  
+  .bid-button {
+    width: 100%;
+  }
+}
+
+/* ローディング */
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* エラーメッセージ */
+.error-message {
+  background: #e74c3c;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* 成功メッセージ */
+.success-message {
+  background: #27ae60;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
