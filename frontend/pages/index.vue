@@ -18,14 +18,83 @@
 
     <!-- オークション開始メッセージ -->
 
-    <!-- リセットボタン -->
-    <div v-if="!loading && products.length > 0" class="reset-section">
-      <button @click="resetAuctionTime" class="reset-button">
-        🔄 オークション時間をリセット
-      </button>
-      <button @click="fullReset" class="reset-button full-reset">
-        🗑️ 完全リセット
-      </button>
+    <!-- オークション時間管理ドロップダウン -->
+    <div v-if="!loading && products.length > 0" class="dropdown-section">
+      <div class="dropdown" :class="{ 'open': showDropdown }">
+        <button @click="toggleDropdown" class="dropdown-toggle">
+          ▼ オークション時間設定
+        </button>
+        <div class="dropdown-menu" @click.stop>
+          <div @click="() => { resetAuctionTime(); closeDropdown(); }" class="dropdown-item">
+            🔄 オークション時間リセット
+          </div>
+          <div @click="() => { setCustomTimes(); closeDropdown(); }" class="dropdown-item">
+            ⏰ 個別時間設定
+          </div>
+          <div @click="() => { fullReset(); closeDropdown(); }" class="dropdown-item danger">
+            🗑️ 完全リセット
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ドロップダウン外クリックで閉じるためのオーバーレイ -->
+    <div v-if="showDropdown" class="dropdown-overlay" @click="closeDropdown"></div>
+
+    <!-- 個別時間設定モーダル -->
+    <div v-if="showTimeModal" class="modal-overlay" @click="closeTimeModal">
+      <div class="modal-content" @click.stop>
+        <h3>商品ごとのオークション時間設定</h3>
+        <div class="time-settings">
+          <div v-for="product in products" :key="product.id" class="time-setting-item">
+            <div class="product-info">
+              <span class="product-name-small">{{ product.name }}</span>
+              <span class="current-time">現在: {{ formatTime(getTimeRemaining(product)) }}</span>
+            </div>
+            <div class="time-inputs">
+              <select
+                v-model="customTimes[product.id].timeRange"
+                class="time-range-select"
+                @change="updateTimeFromRange(product.id)"
+              >
+                <option value="">時間を選択</option>
+                <option value="5">5分</option>
+                <option value="10">10分</option>
+                <option value="15">15分</option>
+                <option value="20">20分</option>
+                <option value="30">30分</option>
+                <option value="45">45分</option>
+                <option value="60">1時間</option>
+                <option value="90">1.5時間</option>
+                <option value="120">2時間</option>
+                <option value="180">3時間</option>
+                <option value="240">4時間</option>
+                <option value="300">5時間</option>
+                <option value="360">6時間</option>
+                <option value="480">8時間</option>
+                <option value="600">10時間</option>
+                <option value="720">12時間</option>
+                <option value="1440">24時間</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="preset-times">
+          <h4>プリセット時間</h4>
+          <div class="preset-buttons">
+            <button @click="setPresetTime(15)" class="preset-button">15分</button>
+            <button @click="setPresetTime(30)" class="preset-button">30分</button>
+            <button @click="setPresetTime(45)" class="preset-button">45分</button>
+            <button @click="setPresetTime(60)" class="preset-button">1時間</button>
+            <button @click="setPresetTime(90)" class="preset-button">1.5時間</button>
+            <button @click="setPresetTime(120)" class="preset-button">2時間</button>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button @click="applyCustomTimes" class="apply-button">適用</button>
+          <button @click="closeTimeModal" class="cancel-button">キャンセル</button>
+        </div>
+      </div>
     </div>
 
     <!-- オークショングリッド -->
@@ -71,6 +140,24 @@
           :class="{ urgent: getTimeRemaining(product) <= 300 }"
         >
           {{ formatTime(getTimeRemaining(product)) }}
+        </div>
+
+        <!-- 個別時間管理ボタン -->
+        <div v-if="product.status === 'ACTIVE'" class="time-management">
+          <button 
+            @click="extendTime(product.id, 300)" 
+            class="extend-button small"
+            :disabled="getTimeRemaining(product) >= 3600"
+          >
+            +5分
+          </button>
+          <button 
+            @click="extendTime(product.id, 600)" 
+            class="extend-button small"
+            :disabled="getTimeRemaining(product) >= 3600"
+          >
+            +10分
+          </button>
         </div>
 
         <!-- 入札情報 -->
@@ -170,6 +257,13 @@ const auctionStartTime = ref<number | null>(null);
 const biddingProducts = ref<Set<number>>(new Set());
 const flashingProducts = ref<Set<number>>(new Set());
 const imageErrors = ref<Set<number>>(new Set());
+
+// ドロップダウン関連
+const showDropdown = ref(false);
+
+// 個別時間管理関連
+const showTimeModal = ref(false);
+const customTimes = ref<Record<number, { timeRange: string; hours: number; minutes: number; seconds: number }>>({});
 
 // ページネーション関連
 const currentPage = ref(1);
@@ -375,11 +469,24 @@ const fetchProducts = async () => {
       console.log('🎉 新しいオークションを開始しました！');
     }
 
-    // 商品データを処理（終了時間を短く設定）
+    // 商品データを処理（個別の終了時間を設定）
     const processedData = data.map((product, index) => {
       const now = new Date();
-      // 最初の商品は30分後、以降は2分間隔で終了
-      const endTime = new Date(now.getTime() + (30 - index * 2) * 60 * 1000);
+      
+      // 商品ごとに異なる時間を設定
+      let baseMinutes: number;
+      switch (index % 4) {
+        case 0: baseMinutes = 45; break; // 45分
+        case 1: baseMinutes = 30; break; // 30分
+        case 2: baseMinutes = 20; break; // 20分
+        case 3: baseMinutes = 15; break; // 15分
+        default: baseMinutes = 25; break;
+      }
+      
+      // インデックスに応じて少しずつ時間を調整
+      const adjustedMinutes = Math.max(5, baseMinutes - Math.floor(index / 4) * 2);
+      const endTime = new Date(now.getTime() + adjustedMinutes * 60 * 1000);
+      
       return {
         ...product,
         endTime: endTime.toISOString()
@@ -612,6 +719,146 @@ const stopCountdown = () => {
     countdownInterval.value = null;
     console.log('⏹️ カウントダウンタイマーを停止しました');
   }
+};
+
+// 個別時間延長
+const extendTime = (productId: number, seconds: number) => {
+  const product = products.value.find(p => p.id === productId);
+  if (!product || product.status !== 'ACTIVE') return;
+
+  const currentEndTime = new Date(product.endTime);
+  const now = new Date();
+  const remainingSeconds = Math.floor((currentEndTime.getTime() - now.getTime()) / 1000);
+  
+  // 現在の残り時間が60分未満の場合のみ延長
+  if (remainingSeconds < 3600) {
+    const newEndTime = new Date(currentEndTime.getTime() + (seconds * 1000));
+    product.endTime = newEndTime.toISOString();
+    
+    console.log(`⏰ 個別時間延長: 商品ID ${productId}, ${seconds}秒延長, 新しい終了時間: ${newEndTime.toLocaleString()}`);
+    
+    // 60分を超えた場合は60分に制限
+    const maxEndTime = new Date(now.getTime() + 3600000);
+    if (newEndTime.getTime() > maxEndTime.getTime()) {
+      product.endTime = maxEndTime.toISOString();
+      console.log(`⚠️ 60分制限により終了時間を調整: 商品ID ${productId}, 最終終了時間: ${maxEndTime.toLocaleString()}`);
+    }
+    
+    // ローカルストレージに保存
+    saveToStorage();
+    successMessage.value = `商品「${product.name}」の時間を${seconds}秒延長しました！`;
+    
+    setTimeout(() => {
+      successMessage.value = '';
+    }, 3000);
+  } else {
+    errorMessage.value = '60分以上の残り時間がある商品は延長できません';
+    setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
+  }
+};
+
+// 個別時間設定モーダルを開く
+const setCustomTimes = () => {
+  // 現在の時間を初期値として設定
+  products.value.forEach(product => {
+    const remaining = getTimeRemaining(product);
+    const hours = Math.floor(remaining / 3600);
+    const minutes = Math.floor((remaining % 3600) / 60);
+    const seconds = remaining % 60;
+    
+    customTimes.value[product.id] = { 
+      timeRange: '', 
+      hours, 
+      minutes, 
+      seconds 
+    };
+  });
+  
+  showTimeModal.value = true;
+};
+
+// 個別時間設定モーダルを閉じる
+const closeTimeModal = () => {
+  showTimeModal.value = false;
+};
+
+// ドロップダウンの開閉を切り替え
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+
+// ドロップダウンを閉じる
+const closeDropdown = () => {
+  showDropdown.value = false;
+};
+
+// ドロップダウンリストから時間を更新
+const updateTimeFromRange = (productId: number) => {
+  const customTime = customTimes.value[productId];
+  if (!customTime || !customTime.timeRange) return;
+  
+  const totalMinutes = parseInt(customTime.timeRange);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  
+  customTime.hours = hours;
+  customTime.minutes = minutes;
+  customTime.seconds = 0;
+  
+  console.log(`⏰ 時間範囲更新: 商品ID ${productId}, ${totalMinutes}分 (${hours}時間${minutes}分)`);
+};
+
+// プリセット時間を設定
+const setPresetTime = (minutes: number) => {
+  products.value.forEach(product => {
+    if (product.status === 'ACTIVE') {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      
+      customTimes.value[product.id] = {
+        timeRange: minutes.toString(),
+        hours: hours,
+        minutes: remainingMinutes,
+        seconds: 0
+      };
+    }
+  });
+  
+  successMessage.value = `全商品の時間を${minutes}分に設定しました！`;
+  setTimeout(() => {
+    successMessage.value = '';
+  }, 2000);
+};
+
+// カスタム時間を適用
+const applyCustomTimes = () => {
+  const now = new Date();
+  
+  products.value.forEach(product => {
+    const customTime = customTimes.value[product.id];
+    if (customTime && product.status === 'ACTIVE') {
+      const totalSeconds = (customTime.hours * 3600) + (customTime.minutes * 60) + customTime.seconds;
+      
+      if (totalSeconds > 0) {
+        const newEndTime = new Date(now.getTime() + (totalSeconds * 1000));
+        product.endTime = newEndTime.toISOString();
+        
+        console.log(`⏰ カスタム時間設定: 商品ID ${product.id}, 新しい終了時間: ${newEndTime.toLocaleString()}`);
+      }
+    }
+  });
+  
+  // ローカルストレージに保存
+  saveToStorage();
+  
+  showTimeModal.value = false;
+  successMessage.value = '個別時間設定を適用しました！';
+  
+  setTimeout(() => {
+    successMessage.value = '';
+  }, 3000);
 };
 
 // オークション残り時間を初期値にリセット
