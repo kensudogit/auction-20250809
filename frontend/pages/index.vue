@@ -13,7 +13,7 @@
 
     <!-- ローディング -->
     <div v-if="loading" class="loading">
-      商品を読み込み中...
+      <div class="spinner"></div>
     </div>
 
     <!-- オークション開始メッセージ -->
