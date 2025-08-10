@@ -130,7 +130,10 @@
         <p class="product-description">{{ product.description }}</p>
 
         <!-- 現在価格 -->
-        <div class="product-price">
+        <div 
+          class="product-price"
+          :class="{ 'price-flash': flashingPrices.has(product.id) }"
+        >
           ¥{{ formatPrice(product.currentPrice) }}
         </div>
 
@@ -256,6 +259,7 @@ const currentTime = ref(Date.now());
 const auctionStartTime = ref<number | null>(null);
 const biddingProducts = ref<Set<number>>(new Set());
 const flashingProducts = ref<Set<number>>(new Set());
+const flashingPrices = ref<Set<number>>(new Set());
 const imageErrors = ref<Set<number>>(new Set());
 
 // ドロップダウン関連
@@ -600,6 +604,9 @@ const placeBid = async (productId: number) => {
     // フロントエンド側で入札時の10秒延長を実装
     const product = products.value.find(p => p.id === productId);
     if (product && product.status === 'ACTIVE') {
+      // 入札前の価格を保存
+      const oldPrice = product.currentPrice;
+      
       const currentEndTime = new Date(product.endTime);
       const now = new Date();
       const remainingSeconds = Math.floor((currentEndTime.getTime() - now.getTime()) / 1000);
@@ -622,6 +629,19 @@ const placeBid = async (productId: number) => {
         }
       } else {
         console.log(`❌ 延長条件を満たさない: 商品ID ${productId}, 残り時間: ${remainingSeconds}秒 (60分以上)`);
+      }
+      
+      // 商品の現在価格を更新
+      product.currentPrice = amount;
+      product.highestBidder = bidderName;
+      product.bidCount++;
+      
+      // 価格変更のフラッシュ効果
+      if (oldPrice !== product.currentPrice) {
+        flashingPrices.value.add(productId);
+        setTimeout(() => {
+          flashingPrices.value.delete(productId);
+        }, 1500);
       }
     }
     
