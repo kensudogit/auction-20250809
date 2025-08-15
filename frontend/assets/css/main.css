@@ -17,19 +17,19 @@ body {
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 8px;
+  padding: 6px;
 }
 
 /* ヘッダー */
 .header {
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: white;
-  padding: 10px 0;
+  padding: 5px 0;
 }
 
 .header h2 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 0;
   text-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -44,9 +44,9 @@ body {
 .auction-started-message {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 10px 16px;
+  padding: 8px 16px;
   border-radius: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   text-align: center;
   font-weight: 600;
   font-size: 0.9rem;
@@ -372,7 +372,7 @@ body {
 .dropdown-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .dropdown {
@@ -465,7 +465,7 @@ body {
 .reset-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .reset-button {
@@ -933,4 +933,141 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* アクセシビリティとハイコントラストモードのサポート */
+@media (forced-colors: active) {
+  /* ハイコントラストモードでのボーダーとアウトライン */
+  .product-card {
+    border: 2px solid CanvasText;
+  }
+  
+  .bid-button,
+  .extend-button,
+  .reset-button,
+  .preset-button,
+  .pagination-button,
+  .page-button,
+  .apply-button,
+  .cancel-button {
+    border: 2px solid CanvasText;
+  }
+  
+  .bid-input,
+  .time-input,
+  .time-select,
+  .time-range-select {
+    border: 2px solid CanvasText;
+  }
+  
+  .dropdown-toggle {
+    border: 2px solid CanvasText;
+  }
+  
+  .dropdown-menu {
+    border: 2px solid CanvasText;
+  }
+  
+  .dropdown-item {
+    border-bottom: 1px solid CanvasText;
+  }
+  
+  .modal-content {
+    border: 2px solid CanvasText;
+  }
+  
+  .time-setting-item {
+    border: 2px solid CanvasText;
+  }
+  
+  .preset-times {
+    border: 2px solid CanvasText;
+  }
+  
+  /* ハイコントラストモードでのフォーカス表示 */
+  .bid-button:focus,
+  .extend-button:focus,
+  .reset-button:focus,
+  .preset-button:focus,
+  .pagination-button:focus,
+  .page-button:focus,
+  .apply-button:focus,
+  .cancel-button:focus,
+  .dropdown-toggle:focus {
+    outline: 3px solid CanvasText;
+    outline-offset: 2px;
+  }
+  
+  .bid-input:focus,
+  .time-input:focus,
+  .time-select:focus,
+  .time-range-select:focus {
+    outline: 3px solid CanvasText;
+    outline-offset: 2px;
+  }
+  
+  /* ハイコントラストモードでのテキスト色 */
+  .product-name,
+  .product-description,
+  .product-price,
+  .countdown,
+  .bid-info {
+    color: CanvasText;
+  }
+  
+  .header h2 {
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+  
+  /* ハイコントラストモードでの背景色 */
+  .product-card {
+    background: Canvas;
+  }
+  
+  .modal-content {
+    background: Canvas;
+  }
+  
+  .dropdown-menu {
+    background: Canvas;
+  }
+  
+  .preset-times {
+    background: Canvas;
+  }
+  
+  .time-setting-item {
+    background: Canvas;
+  }
+}
+
+/* プリントスタイル */
+@media print {
+  .header,
+  .dropdown-section,
+  .reset-section,
+  .pagination,
+  .bid-form,
+  .extend-button {
+    display: none;
+  }
+  
+  .auction-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-height: none;
+    overflow: visible;
+  }
+  
+  .product-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
 }

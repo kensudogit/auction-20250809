@@ -3,6 +3,11 @@ import { _replaceAppConfig } from '#app/config'
 import { defuFn } from 'defu'
 
 const inlineConfig = {
+  "accessibility": {
+    "highContrast": true,
+    "focusManagement": true,
+    "keyboardNavigation": true
+  },
   "nuxt": {}
 }
 

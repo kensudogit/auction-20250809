@@ -1,0 +1,384 @@
+/* アクセシビリティとハイコントラストモードのサポート */
+/* 新しい Forced Colors Mode standard に対応 */
+/* 古い -ms-high-contrast プロパティは完全に除去済み */
+
+/* ハイコントラストモードの基本設定 */
+@media (forced-colors: active) {
+  /* システムカラーの使用 */
+  :root {
+    --hc-border: CanvasText;
+    --hc-background: Canvas;
+    --hc-text: CanvasText;
+    --hc-highlight: Highlight;
+    --hc-highlight-text: HighlightText;
+    --hc-button-face: ButtonFace;
+    --hc-button-text: ButtonText;
+    --hc-link: LinkText;
+    --hc-visited: VisitedText;
+  }
+  
+  /* フォーカス表示の強化 */
+  *:focus {
+    outline: 3px solid var(--hc-highlight);
+    outline-offset: 2px;
+  }
+  
+  /* ボタンとインタラクティブ要素 */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  .btn,
+  .button {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-button-face);
+    color: var(--hc-button-text);
+  }
+  
+  button:hover,
+  input[type="button"]:hover,
+  input[type="submit"]:hover,
+  input[type="reset"]:hover,
+  .btn:hover,
+  .button:hover {
+    background: var(--hc-highlight);
+    color: var(--hc-highlight-text);
+  }
+  
+  /* フォーム要素 */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  select {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-background);
+    color: var(--hc-text);
+  }
+  
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="search"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--hc-highlight);
+    outline: 3px solid var(--hc-highlight);
+    outline-offset: 2px;
+  }
+  
+  /* リンク */
+  a {
+    color: var(--hc-link);
+    text-decoration: underline;
+  }
+  
+  a:visited {
+    color: var(--hc-visited);
+  }
+  
+  a:hover,
+  a:focus {
+    color: var(--hc-highlight);
+    background: var(--hc-highlight-text);
+  }
+  
+  /* カードとコンテナ */
+  .card,
+  .container,
+  .box,
+  .panel {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-background);
+  }
+  
+  /* テーブル */
+  table {
+    border: 2px solid var(--hc-border);
+  }
+  
+  th,
+  td {
+    border: 1px solid var(--hc-border);
+    background: var(--hc-background);
+    color: var(--hc-text);
+  }
+  
+  th {
+    background: var(--hc-highlight);
+    color: var(--hc-highlight-text);
+  }
+  
+  /* リスト */
+  ul,
+  ol {
+    color: var(--hc-text);
+  }
+  
+  li {
+    border-bottom: 1px solid var(--hc-border);
+  }
+  
+  /* モーダルとオーバーレイ */
+  .modal,
+  .overlay,
+  .popup {
+    border: 3px solid var(--hc-border);
+    background: var(--hc-background);
+  }
+  
+  /* ドロップダウン */
+  .dropdown-menu,
+  .select-options {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-background);
+  }
+  
+  .dropdown-item,
+  .select-option {
+    border-bottom: 1px solid var(--hc-border);
+    color: var(--hc-text);
+  }
+  
+  .dropdown-item:hover,
+  .dropdown-item:focus,
+  .select-option:hover,
+  .select-option:focus {
+    background: var(--hc-highlight);
+    color: var(--hc-highlight-text);
+  }
+  
+  /* アラートとメッセージ */
+  .alert,
+  .message,
+  .notification {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-background);
+    color: var(--hc-text);
+  }
+  
+  .alert-success {
+    border-color: var(--hc-highlight);
+    background: var(--hc-highlight);
+    color: var(--hc-highlight-text);
+  }
+  
+  .alert-error {
+    border-color: var(--hc-border);
+    background: var(--hc-background);
+    color: var(--hc-text);
+  }
+  
+  /* プログレスバー */
+  .progress-bar,
+  .progress {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-background);
+  }
+  
+  .progress-fill,
+  .progress-value {
+    background: var(--hc-highlight);
+    border: 1px solid var(--hc-highlight-text);
+  }
+  
+  /* チェックボックスとラジオボタン */
+  input[type="checkbox"],
+  input[type="radio"] {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-background);
+  }
+  
+  input[type="checkbox"]:checked,
+  input[type="radio"]:checked {
+    background: var(--hc-highlight);
+    border-color: var(--hc-highlight-text);
+  }
+  
+  /* スライダー */
+  input[type="range"] {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-background);
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    background: var(--hc-highlight);
+    border: 2px solid var(--hc-highlight-text);
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    background: var(--hc-highlight);
+    border: 2px solid var(--hc-highlight-text);
+  }
+}
+
+/* プリント時のアクセシビリティ */
+@media print {
+  /* コントラストの向上 */
+  * {
+    color: black !important;
+    background: white !important;
+    border-color: black !important;
+  }
+  
+  /* フォーカス表示の維持 */
+  *:focus {
+    outline: 2px solid black !important;
+  }
+  
+  /* リンクの表示 */
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+  
+  /* 画像の代替テキスト */
+  img[alt]:after {
+    content: " [" attr(alt) "]";
+  }
+}
+
+/* モーション削減のサポート */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 高コントラストモードの検出（フォールバック） */
+@media (prefers-contrast: high) {
+  /* 高コントラスト設定の適用 */
+  :root {
+    --hc-border: #000000;
+    --hc-background: #ffffff;
+    --hc-text: #000000;
+    --hc-highlight: #000080;
+    --hc-highlight-text: #ffffff;
+  }
+}
+
+/* 新しい Forced Colors Mode の完全対応 */
+@media (forced-colors: active) and (prefers-contrast: high) {
+  /* システムカラーとユーザー設定の組み合わせ */
+  :root {
+    --hc-border: CanvasText;
+    --hc-background: Canvas;
+    --hc-text: CanvasText;
+    --hc-highlight: Highlight;
+    --hc-highlight-text: HighlightText;
+    --hc-button-face: ButtonFace;
+    --hc-button-text: ButtonText;
+    --hc-link: LinkText;
+    --hc-visited: VisitedText;
+  }
+  
+  /* より強いコントラスト設定 */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  .btn,
+  .button {
+    border-width: 3px;
+    outline: 2px solid var(--hc-highlight);
+    outline-offset: 1px;
+  }
+  
+  /* フォーカス表示の強化 */
+  *:focus {
+    outline: 4px solid var(--hc-highlight);
+    outline-offset: 3px;
+  }
+  
+  /* インタラクティブ要素の強化 */
+  a:hover,
+  a:focus,
+  button:hover,
+  button:focus {
+    outline: 3px solid var(--hc-highlight);
+    outline-offset: 2px;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  /* ダークモードでのアクセシビリティ向上 */
+  :root {
+    --hc-border: #ffffff;
+    --hc-background: #000000;
+    --hc-text: #ffffff;
+    --hc-highlight: #0066cc;
+    --hc-highlight-text: #ffffff;
+  }
+}
+
+/* ライトモード対応 */
+@media (prefers-color-scheme: light) {
+  /* ライトモードでのアクセシビリティ向上 */
+  :root {
+    --hc-border: #000000;
+    --hc-background: #ffffff;
+    --hc-text: #000000;
+    --hc-highlight: #0066cc;
+    --hc-highlight-text: #ffffff;
+  }
+}
+
+/* アクセシビリティのベストプラクティス */
+/* スキップリンク */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--hc-highlight, #0066cc);
+  color: var(--hc-highlight-text, #ffffff);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* スクリーンリーダー専用テキスト */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* フォーカスインジケーター */
+.focus-indicator {
+  position: relative;
+}
+
+.focus-indicator:focus::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid var(--hc-highlight, #0066cc);
+  border-radius: 4px;
+  pointer-events: none;
+}

@@ -1,35 +1,33 @@
 #!/bin/bash
+echo "Auction プロジェクトを起動中..."
+echo
 
-echo "オークションシステムを起動しています..."
+echo "1. ファイアウォール設定を確認中..."
+echo "注意: 管理者権限が必要な場合があります"
+echo
 
-echo ""
-echo "1. MySQLデータベースを確認してください"
-echo "   - MySQLサーバーが起動していることを確認"
-echo "   - auction_dbデータベースが作成されていることを確認"
-echo ""
-
-echo "2. バックエンドを起動しています..."
+echo "2. バックエンドを起動中..."
 cd backend
 ./gradlew bootRun &
 BACKEND_PID=$!
 cd ..
 
-echo ""
-echo "3. フロントエンドを起動しています..."
+echo "3. フロントエンドを起動中..."
+sleep 10
 cd frontend
-npm install
-npm run dev &
+./start.sh &
 FRONTEND_PID=$!
 cd ..
 
-echo ""
-echo "起動完了！"
-echo "バックエンド: http://localhost:8080"
-echo "フロントエンド: http://localhost:3000"
-echo ""
-
-# プロセス終了時の処理
-trap "echo 'システムを停止しています...'; kill $BACKEND_PID $FRONTEND_PID; exit" INT
-
-# プロセスが終了するまで待機
+echo
+echo "プロジェクトの起動が完了しました！"
+echo
+echo "アクセス方法:"
+echo "- このPCから: http://localhost:3000"
+echo "- 他のPCから: http://[このPCのIPアドレス]:3000"
+echo
+echo "IPアドレスの確認: ifconfig または ip addr"
+echo
+echo "プロセスを停止するには: kill $BACKEND_PID $FRONTEND_PID"
+echo
 wait

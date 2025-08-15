@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/.vercel/output/static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/_nuxt/(.*)",
+      "dest": "/frontend/.vercel/output/static/_nuxt/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/.vercel/output/static/index.html"
+    }
+  ]
+}

@@ -13,7 +13,7 @@ import defu, { defuFn } from 'file://C:/dev2508/auction/frontend/node_modules/de
 import destr, { destr as destr$1 } from 'file://C:/dev2508/auction/frontend/node_modules/destr/dist/index.mjs';
 import { snakeCase } from 'file://C:/dev2508/auction/frontend/node_modules/scule/dist/index.mjs';
 import { createHead as createHead$1, propsToString, renderSSRHead } from 'file://C:/dev2508/auction/frontend/node_modules/unhead/dist/server.mjs';
-import { stringify, uneval } from 'file://C:/dev2508/auction/frontend/node_modules/devalue/index.js';
+import devalue from 'file://C:/dev2508/auction/frontend/node_modules/@nuxt/devalue/dist/devalue.mjs';
 import { isVNode, toValue, isRef } from 'file://C:/dev2508/auction/frontend/node_modules/vue/index.mjs';
 import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file://C:/dev2508/auction/frontend/node_modules/unhead/dist/plugins.mjs';
 import { createHooks } from 'file://C:/dev2508/auction/frontend/node_modules/hookable/dist/index.mjs';
@@ -24,11 +24,13 @@ import unstorage_47drivers_47fs from 'file://C:/dev2508/auction/frontend/node_mo
 import { digest } from 'file://C:/dev2508/auction/frontend/node_modules/ohash/dist/index.mjs';
 import { toRouteMatcher, createRouter } from 'file://C:/dev2508/auction/frontend/node_modules/radix3/dist/index.mjs';
 import { readFile } from 'node:fs/promises';
-import consola, { consola as consola$1 } from 'file://C:/dev2508/auction/frontend/node_modules/consola/dist/index.mjs';
+import consola from 'file://C:/dev2508/auction/frontend/node_modules/nitropack/node_modules/consola/dist/index.mjs';
 import { ErrorParser } from 'file://C:/dev2508/auction/frontend/node_modules/youch-core/build/index.js';
 import { Youch } from 'file://C:/dev2508/auction/frontend/node_modules/nitropack/node_modules/youch/build/index.js';
 import { SourceMapConsumer } from 'file://C:/dev2508/auction/frontend/node_modules/source-map/source-map.js';
 import { AsyncLocalStorage } from 'node:async_hooks';
+import { consola as consola$1 } from 'file://C:/dev2508/auction/frontend/node_modules/nuxt/node_modules/consola/dist/index.mjs';
+import { stringify } from 'file://C:/dev2508/auction/frontend/node_modules/devalue/index.js';
 import { getContext } from 'file://C:/dev2508/auction/frontend/node_modules/unctx/dist/index.mjs';
 import { captureRawStackTrace, parseRawStackTrace } from 'file://C:/dev2508/auction/frontend/node_modules/errx/dist/index.js';
 import { promises } from 'node:fs';
@@ -577,6 +579,11 @@ function cloneWithProxy(obj, overrides) {
 const cachedEventHandler = defineCachedEventHandler;
 
 const inlineAppConfig = {
+  "accessibility": {
+    "highContrast": true,
+    "focusManagement": true,
+    "keyboardNavigation": true
+  },
   "nuxt": {}
 };
 
@@ -635,6 +642,9 @@ const _inlineRuntimeConfig = {
       "/__nuxt_error": {
         "cache": false
       },
+      "/": {
+        "prerender": true
+      },
       "/_nuxt/builds/meta/**": {
         "headers": {
           "cache-control": "public, max-age=31536000, immutable"
@@ -647,10 +657,7 @@ const _inlineRuntimeConfig = {
       }
     }
   },
-  "public": {
-    "apiBase": "http://localhost:8080",
-    "wsUrl": "http://localhost:8080"
-  }
+  "public": {}
 };
 const envOptions = {
   prefix: "NITRO_",
@@ -1855,45 +1862,16 @@ const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: styles
 }, Symbol.toStringTag, { value: 'Module' }));
 
-function renderPayloadResponse(ssrContext) {
-  return {
-    body: stringify(splitPayload(ssrContext).payload, ssrContext._payloadReducers) ,
-    statusCode: getResponseStatus(ssrContext.event),
-    statusMessage: getResponseStatusText(ssrContext.event),
-    headers: {
-      "content-type": "application/json;charset=utf-8" ,
-      "x-powered-by": "Nuxt"
-    }
-  };
-}
-function renderPayloadJsonScript(opts) {
-  const contents = opts.data ? stringify(opts.data, opts.ssrContext._payloadReducers) : "";
-  const payload = {
-    "type": "application/json",
-    "innerHTML": contents,
-    "data-nuxt-data": appId,
-    "data-ssr": !(opts.ssrContext.noSSR)
-  };
-  {
-    payload.id = "__NUXT_DATA__";
-  }
-  if (opts.src) {
-    payload["data-src"] = opts.src;
-  }
-  const config = uneval(opts.ssrContext.config);
+function renderPayloadScript(opts) {
+  opts.data.config = opts.ssrContext.config;
+  const nuxtData = devalue(opts.data);
+  const singleAppPayload = `window.__NUXT__=${nuxtData}`;
+  `window.__NUXT__=window.__NUXT__||{};window.__NUXT__[${JSON.stringify(appId)}]=${nuxtData}`;
   return [
-    payload,
     {
-      innerHTML: `window.__NUXT__={};window.__NUXT__.config=${config}`
+      innerHTML: singleAppPayload
     }
   ];
-}
-function splitPayload(ssrContext) {
-  const { data, prerenderedAt, ...initial } = ssrContext.payload;
-  return {
-    initial: { ...initial, prerenderedAt },
-    payload: { data, prerenderedAt }
-  };
 }
 
 const renderSSRHeadOptions = {"omitLineBreaks":false};
@@ -1903,7 +1881,6 @@ globalThis.__publicAssetsURL = publicAssetsURL;
 const HAS_APP_TELEPORTS = !!(appTeleportAttrs.id);
 const APP_TELEPORT_OPEN_TAG = HAS_APP_TELEPORTS ? `<${appTeleportTag}${propsToString(appTeleportAttrs)}>` : "";
 const APP_TELEPORT_CLOSE_TAG = HAS_APP_TELEPORTS ? `</${appTeleportTag}>` : "";
-const PAYLOAD_URL_RE = /^[^?]*\/_payload.json(?:\?.*)?$/ ;
 const renderer = defineRenderHandler(async (event) => {
   const nitroApp = useNitroApp();
   const ssrError = event.path.startsWith("/__nuxt_error") ? getQuery$1(event) : null;
@@ -1919,12 +1896,6 @@ const renderer = defineRenderHandler(async (event) => {
   if (ssrError) {
     ssrError.statusCode &&= Number.parseInt(ssrError.statusCode);
     setSSRError(ssrContext, ssrError);
-  }
-  const isRenderingPayload = PAYLOAD_URL_RE.test(ssrContext.url);
-  if (isRenderingPayload) {
-    const url = ssrContext.url.substring(0, ssrContext.url.lastIndexOf("/")) || "/";
-    ssrContext.url = url;
-    event._path = event.node.req.url = url;
   }
   const routeOptions = getRouteRules(event);
   if (routeOptions.ssr === false) {
@@ -1946,10 +1917,6 @@ const renderer = defineRenderHandler(async (event) => {
   }
   if (ssrContext.payload?.error && !ssrError) {
     throw ssrContext.payload.error;
-  }
-  if (isRenderingPayload) {
-    const response = renderPayloadResponse(ssrContext);
-    return response;
   }
   const NO_SCRIPTS = routeOptions.noScripts;
   const { styles, scripts } = getRequestDependencies(ssrContext, renderer.rendererContext);
@@ -1981,7 +1948,7 @@ const renderer = defineRenderHandler(async (event) => {
       link: getPrefetchLinks(ssrContext, renderer.rendererContext)
     }, headEntryOptions);
     ssrContext.head.push({
-      script: renderPayloadJsonScript({ ssrContext, data: ssrContext.payload }) 
+      script: renderPayloadScript({ ssrContext, data: ssrContext.payload })
     }, {
       ...headEntryOptions,
       // this should come before another end of body scripts
@@ -2046,4 +2013,3 @@ const renderer$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty
   __proto__: null,
   default: renderer
 }, Symbol.toStringTag, { value: 'Module' }));
-//# sourceMappingURL=index.mjs.map

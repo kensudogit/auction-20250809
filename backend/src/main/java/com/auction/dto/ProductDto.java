@@ -2,8 +2,7 @@ package com.auction.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.math.BigDecimal;
+import lombok.AllArgsConstructorcd;
 import java.time.LocalDateTime;
 
 /**

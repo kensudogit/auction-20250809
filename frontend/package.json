@@ -7,16 +7,32 @@
     "dev": "nuxt dev",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "vercel-build": "nuxt build",
+    "clean": "if exist .nuxt rmdir /s /q .nuxt && if exist .output rmdir /s /q .output && if exist node_modules\\.vite rmdir /s /q node_modules\\.vite",
+    "prebuild": "npm run clean",
+    "build:static": "nuxt build",
+    "build:vercel": "nuxt build"
   },
   "dependencies": {
     "nuxt": "^3.8.0",
-    "vue": "^3.3.0",
     "sockjs-client": "^1.6.1",
+    "vue": "^3.3.0",
     "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@nuxtjs/vercel-builder": "^0.25.0",
+    "@types/node": "^20.19.10",
+    "autoprefixer": "^10.4.21",
+    "cssnano": "^7.1.0",
+    "postcss-remove-declaration": "^1.1.0",
     "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "overrides": {
+    "vite": "^6.3.5"
   }
 }

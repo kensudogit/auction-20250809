@@ -4,6 +4,11 @@ import type { Defu } from 'defu'
 
 
 declare const inlineConfig = {
+  "accessibility": {
+    "highContrast": true,
+    "focusManagement": true,
+    "keyboardNavigation": true
+  },
   "nuxt": {}
 }
 type ResolvedAppConfig = Defu<typeof inlineConfig, []>

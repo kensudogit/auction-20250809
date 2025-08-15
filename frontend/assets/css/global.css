@@ -1,0 +1,210 @@
+/* グローバルアクセシビリティ設定 */
+/* 新しい Forced Colors Mode standard に対応 */
+/* 古い -ms-high-contrast プロパティは完全に除去済み */
+/* 警告抑制のための追加設定 */
+
+/* CSSカスタムプロパティの定義 */
+:root {
+  /* アクセシビリティカラー */
+  --accessibility-focus: #0066cc;
+  --accessibility-focus-text: #ffffff;
+  --accessibility-high-contrast: #000000;
+  --accessibility-high-contrast-bg: #ffffff;
+  
+  /* フォーカス表示 */
+  --focus-outline: 3px solid var(--accessibility-focus);
+  --focus-outline-offset: 2px;
+  
+  /* ハイコントラストモード */
+  --hc-border: #000000;
+  --hc-background: #ffffff;
+  --hc-text: #000000;
+  --hc-highlight: #0066cc;
+  --hc-highlight-text: #ffffff;
+}
+
+/* グローバルフォーカス設定 */
+*:focus {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* フォーカス可能な要素の強化 */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus,
+[tabindex]:focus {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+  position: relative;
+}
+
+/* ハイコントラストモードの基本設定 */
+@media (prefers-contrast: high) {
+  :root {
+    --hc-border: #000000;
+    --hc-background: #ffffff;
+    --hc-text: #000000;
+    --hc-highlight: #000080;
+    --hc-highlight-text: #ffffff;
+  }
+  
+  /* 基本要素のコントラスト強化 */
+  body {
+    background: var(--hc-background);
+    color: var(--hc-text);
+  }
+  
+  /* ボーダーの強化 */
+  * {
+    border-color: var(--hc-border) !important;
+  }
+  
+  /* ボタンの強化 */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-background);
+    color: var(--hc-text);
+  }
+  
+  /* フォーカス表示の強化 */
+  *:focus {
+    outline: 3px solid var(--hc-highlight);
+    outline-offset: 3px;
+  }
+}
+
+/* 新しい Forced Colors Mode 標準への対応 */
+@media (forced-colors: active) {
+  :root {
+    --hc-border: CanvasText;
+    --hc-background: Canvas;
+    --hc-text: CanvasText;
+    --hc-highlight: Highlight;
+    --hc-highlight-text: HighlightText;
+    --hc-button-face: ButtonFace;
+    --hc-button-text: ButtonText;
+    --hc-link: LinkText;
+    --hc-visited: VisitedText;
+  }
+  
+  /* システムカラーの使用 */
+  body {
+    background: var(--hc-background);
+    color: var(--hc-text);
+  }
+  
+  /* インタラクティブ要素 */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    border: 2px solid var(--hc-border);
+    background: var(--hc-button-face);
+    color: var(--hc-button-text);
+  }
+  
+  /* フォーカス表示 */
+  *:focus {
+    outline: 3px solid var(--hc-highlight);
+    outline-offset: 2px;
+  }
+  
+  /* リンク */
+  a {
+    color: var(--hc-link);
+  }
+  
+  a:visited {
+    color: var(--hc-visited);
+  }
+}
+
+/* モーション削減のサポート */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accessibility-focus: #66b3ff;
+    --accessibility-focus-text: #000000;
+    --accessibility-high-contrast: #ffffff;
+    --accessibility-high-contrast-bg: #000000;
+  }
+}
+
+/* ライトモード対応 */
+@media (prefers-color-scheme: light) {
+  :root {
+    --accessibility-focus: #0066cc;
+    --accessibility-focus-text: #ffffff;
+    --accessibility-high-contrast: #000000;
+    --accessibility-high-contrast-bg: #ffffff;
+  }
+}
+
+/* アクセシビリティのベストプラクティス */
+/* スキップリンク */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--accessibility-focus);
+  color: var(--accessibility-focus-text);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* スクリーンリーダー専用テキスト */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* フォーカスインジケーター */
+.focus-indicator {
+  position: relative;
+}
+
+.focus-indicator:focus::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid var(--accessibility-focus);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* 警告抑制のための追加設定 */
+/* 古いプロパティは完全に除去済み */
+/* 新しい標準のみを使用 */
